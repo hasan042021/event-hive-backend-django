@@ -36,7 +36,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "https://public-library-django.onrender.com",
+    "https://event-hive-backend-django.onrender.com/",
     "https://*.127.0.0.1",
 ]
 
