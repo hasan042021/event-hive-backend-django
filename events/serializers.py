@@ -89,7 +89,7 @@ class EventSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get("description", instance.description)
         instance.time = validated_data.get("time", instance.time)
         instance.location = validated_data.get("location", instance.location)
-        instance.thumbnail = validated_data.get("thumbnail")
+        instance.thumbnail = validated_data.get("thumbnail", instance.thumbnail)
         print(instance)
         instance.save()
         return instance
@@ -140,7 +140,7 @@ class RSVPSerializer(serializers.ModelSerializer):
         attendee, created = UserProfile.objects.get_or_create(pk=attendee_id)
         validated_data["attendee"] = attendee
         event_id = request.data.get("event")
-        event, created = Event.objects.get_or_create(pk=event_id)
+        event = Event.objects.get(pk=event_id)
         validated_data["event"] = event
 
         instance = super().create(validated_data)

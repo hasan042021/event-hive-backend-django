@@ -41,7 +41,7 @@ class UserRegistrationApiView(APIView):
 
             uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            confirm_link = f"http://127.0.0.1:8000/members/active/{uid}/{token}"
+            confirm_link = f"http://event-hive-backend-django.onrender.com/members/active/{uid}/{token}"
             email_subject = "Confirm Your Email"
             email_body = render_to_string(
                 "confirm_email.html", {"confirm_link": confirm_link}
@@ -65,7 +65,7 @@ def activate(request, uid64, token):
         user.is_active = True
         user.save()
         return HttpResponse(
-            "<div style='height:100vh;width:100vw;display:flex;align-items:center;justify-content:center'><h2>Your account is activated. Go to <a target='_blank' href='http://localhost:5173/login'>http://localhost:5173/login</a> to login</h2></div>"
+            "<div style='height:100vh;width:100vw;display:flex;align-items:center;justify-content:center'><h2>Your account is activated. Go to <a target='_blank' href='https://event-hive-client-react-102.onrender.com/login'>https://event-hive-client-react-102.onrender.com/login</a> to login</h2></div>"
         )
     else:
         return redirect("register")

@@ -25,18 +25,28 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["category__slug", "tags__id", "organizer__id"]
+    filterset_fields = ["category__slug", "organizer__id"]
 
-    # def get_queryset(self):
-    #     queryset = Event.objects.all()
-    #     tags_list = self.request.GET.getlist("tags")
-    #     if tags_list:
-    #         lst = tags_list[0]
-    #         lst_str = lst.split(",")
-    #         for tag in lst_str:
-    #             queryset = queryset.filter(tags__id__in=tag)
+    def get_queryset(self):
+        queryset = super().get_queryset()
 
-    #     return queryset
+        # Get the tags__id parameter from the query string
+        tags_param = self.request.query_params.get("tags__id", "")
+
+        if tags_param:
+            # Split the string by commas to get a list of tag IDs
+            tags = tags_param.split(",")
+            try:
+                # Convert the list of strings to a list of integers
+                tags = [int(tag_id) for tag_id in tags]
+            except ValueError:
+                # Handle cases where the tag IDs aren't valid integers
+                raise ValueError("Tag IDs must be valid integers.")
+
+            # Filter the queryset by the tag IDs
+            queryset = queryset.filter(tags__id__in=tags).distinct()
+
+        return queryset
 
 
 class RSVPViewSet(viewsets.ModelViewSet):
