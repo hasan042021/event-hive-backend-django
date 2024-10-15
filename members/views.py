@@ -50,7 +50,7 @@ class UserRegistrationApiView(APIView):
             email = EmailMultiAlternatives(email_subject, "", to=[user.email])
             email.attach_alternative(email_body, "text/html")
             email.send()
-            return Response("Check your mail for confirmation")
+            return Response({"message": "Check your mail for confirmation"})
         return Response(serializer.errors)
 
 
@@ -102,7 +102,6 @@ class UserLoginApiView(APIView):
 class UserLogoutView(APIView):
 
     def get(self, request):
-
         print(request.user, "line 100")
         print(request.auth, "line 101")
         request.user.auth_token.delete()
