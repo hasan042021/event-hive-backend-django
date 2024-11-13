@@ -56,7 +56,7 @@ class EventSerializer(serializers.ModelSerializer):
         tags_data = request.data.get("tags")
         tags = tags_data.split(",")
         # print(type(tags))
-        tag_list = []
+        tag_list = [] 
         # for tag in tags:
 
         #     t = Tag.objects.get_or_create(pk=tag)

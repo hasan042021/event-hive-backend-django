@@ -54,3 +54,8 @@ class RSVPViewSet(viewsets.ModelViewSet):
     serializer_class = RSVPSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["event__id", "attendee__id", "is_accepted"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        print(self.request.query_params)
+        return queryset

@@ -38,6 +38,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.notification_frequency = validated_data.get(
             "notification_frequency", instance.notification_frequency
         )
+        print(instance)
         instance.save()
 
         return instance
