@@ -1,5 +1,3 @@
-# event-hive
-
 # Event Hive
 
 Event Hive is a web application designed to streamline the management of events, providing an intuitive interface for Event Organizers and Attendees. With features for user registration, event creation, RSVPs, and tracking, Event Hive makes organizing and attending events simple and efficient.
@@ -30,7 +28,7 @@ Event Hive is a web application designed to streamline the management of events,
 
 ### Deployment
 
-- **Hosting**: The application is deployed on a reliable hosting platform for seamless access.
+- **Hosting**: [Live Site](https://event-hive-backend-django.onrender.com/)
 
 ## CRUD Operations
 
