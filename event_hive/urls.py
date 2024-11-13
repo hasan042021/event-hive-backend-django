@@ -19,10 +19,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import home
 
 urlpatterns = [
+    path("", home),
     path("admin/", admin.site.urls),
-    path("members/", include("members.urls")),
-    path("events/", include("events.urls")),
+    path("members/", include("members.urls"), name="members"),
+    path("events/", include("events.urls"), name="events"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
