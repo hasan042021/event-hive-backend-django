@@ -15,7 +15,7 @@ numpy==2.1.0
 pillow==10.4.0
 pipenv==2024.0.1
 platformdirs==4.2.2
-psycopg2==2.9.9
+psycopg2-binary
 PyAutoGUI==0.9.54
 PyGetWindow==0.0.9
 PyMsgBox==1.0.9
