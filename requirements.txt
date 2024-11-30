@@ -16,6 +16,7 @@ pillow
 pipenv
 platformdirs
 psycopg2-binary
+pysqlite3
 PyAutoGUI
 PyGetWindow
 PyMsgBox
