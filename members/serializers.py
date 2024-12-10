@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import UserProfile
 from django.contrib.auth.models import User
+from utils.supabase_helpers import upload_to_supabase, get_supabase_client
+from django.conf import settings
 
 ROLES = [("organizer", "Organizer"), ("attendee", "Attendee")]
 
@@ -28,7 +30,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.user.email = user_data.get("email", instance.user.email)
         instance.user.save()
 
-        instance.image = validated_data.get("image", instance.image)
         instance.receive_email_notifications = validated_data.get(
             "receive_email_notifications", instance.receive_email_notifications
         )
@@ -39,6 +40,24 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "notification_frequency", instance.notification_frequency
         )
         print(instance)
+
+        # Check if there's an image to upload
+        image = validated_data.get("image", None)
+        if image:
+            # Get the Supabase client
+            supabase_client = get_supabase_client()
+            # Define the file path and bucket name
+            bucket_name = settings.SUPABASE_BUCKET
+            file_path = f"user_images/{instance.user.id}/{image.name}"
+
+            # Upload the image to Supabase
+            image_url = upload_to_supabase(
+                supabase_client, bucket_name, image, file_path
+            )
+            # Save the image URL to the instance
+            instance.image = image_url
+
+        # Save the updated instance
         instance.save()
 
         return instance

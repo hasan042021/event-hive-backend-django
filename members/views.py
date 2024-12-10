@@ -16,6 +16,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.views.generic import View
+from rest_framework.parsers import MultiPartParser
 
 # for sending email
 from django.core.mail import EmailMultiAlternatives

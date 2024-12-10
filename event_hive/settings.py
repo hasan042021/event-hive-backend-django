@@ -160,9 +160,15 @@ MEDIA_URL = "/media/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 
+# Supabase
+SUPABASE_BUCKET = "event_hive_bucket"  # Replace with your bucket name
+SUPABASE_URL = env("SUPABASE_URL")
+SUPABASE_API_KEY = env("SUPABASE_API_KEY")
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
+# smtp
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True

@@ -26,5 +26,6 @@ python-dotenv
 pytweening
 setuptools
 sqlparse
+supabase
 tzdata
 virtualenv
