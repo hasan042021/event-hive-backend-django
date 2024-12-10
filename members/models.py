@@ -8,7 +8,7 @@ FREQUENCY = [("daily", "Daily"), ("weekly", "Weekly"), ("monthly", "Monthly")]
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLES)
-    models.URLField(null=True, blank=True)
+    image = models.URLField(null=True, blank=True)
     receive_email_notifications = models.BooleanField(default=True)
     receive_in_app_notifications = models.BooleanField(default=True)
     notification_frequency = models.CharField(
