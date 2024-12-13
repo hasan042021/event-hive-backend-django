@@ -13,30 +13,28 @@ def get_supabase_client():
     return create_client(settings.SUPABASE_URL, settings.SUPABASE_API_KEY)
 
 
-def upload_to_supabase(supabase_client, bucket, file, path):
+def upload_to_supabase(
+    supabase_client, bucket_name, file, file_path, old_file_path=None
+):
+    if old_file_path:
+        delete_response = supabase_client.storage.from_(bucket_name).remove(
+            [old_file_path]
+        )
+        print("Delete response:", delete_response)  # Debugging the delete response
+
+        # Check for any errors during deletion
+        if "error" in delete_response:
+            raise ValueError(f"Error deleting old file: {delete_response['error']}")
     """
-    Upload a file to Supabase Storage and return the public URL.
-
-    Args:
-        supabase_client: The Supabase client instance.
-        bucket: The bucket name.
-        file: The file object to upload.
-        path: The destination path in the bucket.
-
-    Returns:
-        str: Public URL of the uploaded file.
-
-    Raises:
-        Exception: If the upload fails.
+    Upload the file to Supabase storage and return the public URL.
     """
-    # Ensure the bucket exists before uploading
-    response = supabase_client.storage.from_(bucket).list()
-    if response.get("error"):
-        raise Exception(f"Bucket validation error: {response['error']['message']}")
+    # Open the file and upload to Supabase storage
+    print(file)
+    file_bytes = file.read()
+    response = supabase_client.storage.from_(bucket_name).upload(file_path, file_bytes)
 
-    # Perform the upload
-    response = supabase_client.storage.from_(bucket).upload(path, file)
-    if response.get("error"):
-        raise Exception(f"Upload error: {response['error']['message']}")
+    # Get the public URL for the uploaded file
+    # Check for an error in the response
+    public_url = supabase_client.storage.from_(bucket_name).get_public_url(file_path)
 
-    return supabase_client.storage.from_(bucket).get_public_url(path)["publicURL"]
+    return public_url

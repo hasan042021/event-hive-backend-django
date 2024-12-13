@@ -18,12 +18,22 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    image = serializers.FileField(
+        required=False, write_only=True
+    )  # Accept raw file uploads
+    image_url = serializers.CharField(
+        source="image", read_only=True
+    )  # Expose the image URL
 
     class Meta:
         model = UserProfile
         fields = "__all__"
 
     def update(self, instance, validated_data):
+        # Debugging: Check uploaded files and data
+        print("FILES:", self.context["request"].FILES)  # Uploaded files
+        print("DATA:", self.context["request"].data)  # Form data
+        print("DATA:", validated_data)
         user_data = validated_data.get("user", {})
         instance.user.first_name = user_data.get("first_name", instance.user.first_name)
         instance.user.last_name = user_data.get("last_name", instance.user.last_name)
@@ -41,20 +51,29 @@ class UserProfileSerializer(serializers.ModelSerializer):
         )
         print(instance)
 
-        # Check if there's an image to upload
-        image = validated_data.get("image", None)
+        image = validated_data.pop("image", None)
         if image:
             # Get the Supabase client
             supabase_client = get_supabase_client()
-            # Define the file path and bucket name
             bucket_name = settings.SUPABASE_BUCKET
+
+            # Check if the user already has an image URL stored
+            old_image_path = None
+            if instance.image:  # If an image already exists
+                # Construct the old file path
+                old_image_path = (
+                    f"user_images/{instance.user.id}/{instance.image.split('/')[-1]}"
+                )
+
+            # Define the new file path
             file_path = f"user_images/{instance.user.id}/{image.name}"
 
-            # Upload the image to Supabase
+            # Upload the image to Supabase (delete old one if necessary)
             image_url = upload_to_supabase(
-                supabase_client, bucket_name, image, file_path
+                supabase_client, bucket_name, image, file_path, old_image_path
             )
-            # Save the image URL to the instance
+
+            # Save the new image URL to the instance
             instance.image = image_url
 
         # Save the updated instance
