@@ -79,9 +79,7 @@ class EventSerializer(serializers.ModelSerializer):
 
             # Check if the user already has an image URL stored
 
-            file_path = (
-                f"event_images/{organizer}/{event_name}/{instance.user.id}/{image.name}"
-            )
+            file_path = f"event_images/{organizer}/{event_name}/{image.name}"
 
             # Upload the image to Supabase (delete old one if necessary)
             image_url = upload_to_supabase(
