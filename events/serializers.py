@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from .functions import attempt_json_deserialize
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from utils.supabase_helpers import upload_to_supabase, get_supabase_client
+from utils.supabase_helpers import upload_to_supabase, get_supabase_client
+from django.conf import settings
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -40,6 +43,7 @@ class EventSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
     organizer = OrganizerProfileSerializer(read_only=True)
+    thumbnail = serializers.FileField(required=False, write_only=True)
 
     class Meta:
         model = Event
@@ -55,15 +59,37 @@ class EventSerializer(serializers.ModelSerializer):
         validated_data["category"] = category
         tags_data = request.data.get("tags")
         tags = tags_data.split(",")
+        print(validated_data)
         # print(type(tags))
-        tag_list = [] 
+        tag_list = []
         # for tag in tags:
 
         #     t = Tag.objects.get_or_create(pk=tag)
         #     tag_list.append(t)
         validated_data["tags"] = tags
 
-        print(validated_data, "line 54")
+        image = validated_data.get("thumbnail", None)
+
+        event_name = validated_data.get("name")
+        organizer = validated_data.get("organizer")
+        if image:
+            # Get the Supabase client
+            supabase_client = get_supabase_client()
+            bucket_name = settings.SUPABASE_BUCKET
+
+            # Check if the user already has an image URL stored
+
+            file_path = (
+                f"event_images/{organizer}/{event_name}/{instance.user.id}/{image.name}"
+            )
+
+            # Upload the image to Supabase (delete old one if necessary)
+            image_url = upload_to_supabase(
+                supabase_client, bucket_name, image, file_path
+            )
+
+            # Save the new image URL to the instance
+            validated_data["thumbnail"] = image_url
         instance = super().create(validated_data)
 
         return instance

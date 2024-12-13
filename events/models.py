@@ -27,7 +27,7 @@ class Event(models.Model):
     date = models.DateField()
     time = models.TimeField()
     location = models.CharField(max_length=255)
-    thumbnail = models.ImageField(upload_to="events/images/", null=True, blank=True)
+    thumbnail = models.URLField(null=True, blank=True)
 
     description = models.TextField()
 
