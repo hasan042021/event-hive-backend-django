@@ -26,6 +26,7 @@ class OrganizerUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "first_name",
             "last_name",
         ]
@@ -44,6 +45,10 @@ class EventSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
     organizer = OrganizerProfileSerializer(read_only=True)
     thumbnail = serializers.FileField(required=False, write_only=True)
+    thumbnail_url = serializers.CharField(
+        source="thumbnail", read_only=True
+    )  # Expose the image URL
+    organizer_id = serializers.IntegerField(required=False, write_only=True)
 
     class Meta:
         model = Event
@@ -71,7 +76,7 @@ class EventSerializer(serializers.ModelSerializer):
         image = validated_data.get("thumbnail", None)
 
         event_name = validated_data.get("name")
-        organizer = validated_data.get("organizer")
+        organizer = validated_data.get("organizer_id")
         if image:
             # Get the Supabase client
             supabase_client = get_supabase_client()
@@ -113,7 +118,26 @@ class EventSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get("description", instance.description)
         instance.time = validated_data.get("time", instance.time)
         instance.location = validated_data.get("location", instance.location)
-        instance.thumbnail = validated_data.get("thumbnail", instance.thumbnail)
+        image = validated_data.pop("thumbnail", None)
+        organizer = validated_data.get("organizer")
+        print(validated_data)
+
+        if image:
+            # Get the Supabase client
+            supabase_client = get_supabase_client()
+            bucket_name = settings.SUPABASE_BUCKET
+
+            # Define the new file path
+            file_path = f"event_images/{organizer}/{instance.name}/{image.name}"
+
+            # Upload the image to Supabase (delete old one if necessary)
+            image_url = upload_to_supabase(
+                supabase_client, bucket_name, image, file_path
+            )
+
+            # Save the new image URL to the instance
+            instance.thumbnail = image_url
+
         print(instance)
         instance.save()
         return instance
