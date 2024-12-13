@@ -42,7 +42,7 @@ class UserRegistrationApiView(APIView):
 
             uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            confirm_link = f"http://event-hive-backend-django.onrender.com/members/active/{uid}/{token}"
+            confirm_link = f"https://event-hive-backend-django.vercel.app/members/active/{uid}/{token}"
             email_subject = "Confirm Your Email"
             email_body = render_to_string(
                 "confirm_email.html", {"confirm_link": confirm_link}
